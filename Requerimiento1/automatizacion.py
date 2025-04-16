@@ -6,6 +6,7 @@ import Requerimiento1.extraccion_Sage as RS
 import Requerimiento1.extraccion_IEEE as RSIEEE
 import Requerimiento1.extraccion_sd as RSSD
 
+
 def initialize_browser():
     playwright = sync_playwright().start()
     navegador = playwright.chromium.launch(headless=False)  # Cambia a True para headless
