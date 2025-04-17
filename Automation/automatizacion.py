@@ -2,9 +2,9 @@ import os
 import shutil
 from playwright.sync_api import sync_playwright
 import time
-import Requerimiento1.extraccion_Sage as RS
-import Requerimiento1.extraccion_IEEE as RSIEEE
-import Requerimiento1.extraccion_sd as RSSD
+import Automation.extraccion_Sage as RS
+import Automation.extraccion_IEEE as RSIEEE
+import Automation.extraccion_sd as RSSD
 
 
 def initialize_browser():

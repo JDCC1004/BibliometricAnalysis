@@ -1,7 +1,7 @@
 import os
 import time
 
-from Requerimiento1 import automatizacion
+from Automation import automatizacion
 
 
 def safe_click(pagina, selector):

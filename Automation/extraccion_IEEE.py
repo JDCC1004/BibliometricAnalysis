@@ -1,7 +1,8 @@
 import os
 import time
 
-from Requerimiento1 import automatizacion
+from Automation import automatizacion
+
 
 def safe_click(pagina, selector):
     element = pagina.wait_for_selector(selector, state="attached")
@@ -11,7 +12,8 @@ def safe_click(pagina, selector):
     element.click()
 
 
-def extraer_sd(playwright, navegador, pagina):
+
+def extraer_ieee (playwright, navegador, pagina):
     # Crear una nueva pestaña en el navegador
     contexto = pagina.context
     pagina = contexto.new_page()
@@ -19,57 +21,60 @@ def extraer_sd(playwright, navegador, pagina):
     pagina.bring_to_front()
     pagina.wait_for_load_state("domcontentloaded")
 
+
     try:
         # Acceder al enlace de IEEE
         pagina.locator("div[data-content-listing-item='fac-ingenier-a']").click()
         link = pagina.locator(
-            "//a[contains(@href, 'https://www.sciencedirect.com')]//span[contains(text(), 'SCIENCEDIRECT - Consorcio Colombia - (DESCUBRIDOR)')]")
+            "//a[contains(@href, 'https://ieeexplore-ieee-org.crai.referencistas.com/Xplore/home.jsp')]//span[contains(text(), 'IEEE (Institute of Electrical and Electronics Engineers) - (DESCUBRIDOR)')]")
         pagina.wait_for_load_state("domcontentloaded")
         link.last.click()
 
         # Iniciar sesión con correo institucional en caso de ser necesario
-        if pagina.url != "https://www-sciencedirect-com.crai.referencistas.com/":
+        if pagina.url != "https://ieeexplore-ieee-org.crai.referencistas.com/Xplore/home.jsp":
             automatizacion.iniciar_sesion(pagina)
 
-        # Manejo de la búsqueda
-        pagina.wait_for_selector("//input[@id='qs']", timeout=60000)
-        time.sleep(1)
-        pagina.locator("//input[@id='qs']").fill('"computational thinking"')
-        time.sleep(1)
-        pagina.locator('//div[@class="form-button-link-container"]//button').click()
+        #Manejo de la búsqueda
+        busqueda = 'input[type="search"]'
+        pagina.wait_for_selector(busqueda, timeout=60000)
+        pagina.fill(busqueda, '"computational thinking"')
+        pagina.press(busqueda, "Enter")
         time.sleep(5)
         pagina.wait_for_load_state("domcontentloaded")
 
         # Seleccion de n resultados por pagina
-        safe_click(pagina, '//span[contains(text(), "100")]')
+        pagina.locator("#dropdownPerPageLabel").click()
+        pagina.locator('button:has-text("100")').click()
         pagina.wait_for_load_state("domcontentloaded")
 
         # Descarga de citas en formato bibtex
         i = 0
         while True:
             try:
-                i += 1
-                pagina.wait_for_selector("div.LoadingOverlay.show", state="hidden", timeout=60000)
-
+                i+=1
                 # Seleccionar todas las citas y presionar el botón de exportar
-                pagina.locator("//input[@id='select-all-results']").click(force=True)
+                pagina.get_by_role("checkbox", name="Select All on Page").check()
+                pagina.get_by_role("button", name="Export").click()
+
+                # Seleccionar la opcion de exportar como cita y el formato bibtex
+                pagina.locator("a.nav-link:has-text('Citations')").click()
                 pagina.wait_for_load_state("domcontentloaded")
-                pagina.locator("button.button-link.export-all-link-button.button-link-primary.button-link-icon-left").click()
-                pagina.wait_for_load_state("domcontentloaded")
-                time.sleep(1)
+                pagina.locator('//label[@for="download-bibtex"]//input').check()
 
                 # Descargar archivo
                 with pagina.expect_download() as download_info:
-                    pagina.wait_for_selector('//span[contains(text(), "Export citation to BibTeX")]', timeout=10000).click()
+                    pagina.wait_for_selector("button.stats-SearchResults_Citation_Download", timeout=10000).click()
                 download = download_info.value
-                download_path = os.path.join(os.getcwd(), "Datos", f"ScienceDirect_{i}.bib")
+                download_path = os.path.join(os.getcwd(), "Datos", f"IEEE_{i}.bib")
                 download.save_as(download_path)
                 print(f"Archivo descargado en: {download_path}")
                 time.sleep(1)
-                pagina.locator("//input[@id='select-all-results']").click(force=True)
+
+                pagina.get_by_role("button", name="Cancel").click()
+                pagina.wait_for_load_state("domcontentloaded")
 
                 # Manejo de paginación
-                next_button = pagina.get_by_role("link", name="next", exact=True)
+                next_button = pagina.locator("//button[contains(text(), ' > ')]")
 
                 if not next_button.is_visible():
                     print("El botón 'Next' no es visible. Fin del proceso.")
@@ -83,8 +88,6 @@ def extraer_sd(playwright, navegador, pagina):
                 print(f"No hay más páginas.{e}")
                 break
 
-        navegador.close()
-        playwright.stop()
 
     except Exception as e:
         print(f"Exception: {e}")
