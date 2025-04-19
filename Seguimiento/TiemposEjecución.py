@@ -15,7 +15,7 @@ from MetodosOrdenamiento import MetodosOrdenamiento
 sys.setrecursionlimit(10000)
 
 # Definir la ruta del archivo .bib con los datos a analizar
-ruta = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Datos", "BasesFiltradas.bib")
+ruta = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Data", "BasesFiltradas.bib")
 
 # Instancia de la clase que contiene los métodos de ordenamiento
 metodos = MetodosOrdenamiento()
@@ -29,8 +29,7 @@ metodosTexto = [
     metodos.heapSort,
     metodos.bitonicSort,
     metodos.gnomeSort,
-    metodos.binaryInsertionSort,
-    metodos.bubbleSort()
+    metodos.binaryInsertionSort
 ]
 
 # Listado de métodos de ordenamiento para datos numéricos
@@ -97,16 +96,44 @@ def analizarColumna(columnaNombre, entradasBIB):
 
     # Evaluar cada método de ordenamiento
     for metodo in MetodosOrdenamiento:
-        print(f"Ordenando {len(arregloColumna)} elementos usando {metodo.__name__}")
+        try:
+            print(f"Ordenando {len(arregloColumna)} elementos usando {metodo.__name__}")
 
-        # Medición del tiempo de ejecución con timeit
-        tiempoTotal = timeit.timeit(lambda: metodo(arregloColumna[:]), number=10) / 10
+            if metodo.__name__ == "pigeonholeSort":
+                maxSize = 10000
+                maxRange = 100000
 
-        print(f"Tiempo de ejecución para {metodo.__name__}: {tiempoTotal:.6f} segundos")
+                if len(arregloColumna) > maxSize:
+                    print(f"Saltando {metodo.__name__}: demasiados elementos ({len(arregloColumna)} > {maxSize})")
+                    continue
 
-        resultados.append((columnaNombre, metodo.__name__, len(arregloColumna), tiempoTotal))
+                rango = max(arregloColumna) - min(arregloColumna)
+                if rango > maxRange:
+                    print(f"Saltando {metodo.__name__}: rango demasiado amplio ({rango} > {maxRange})")
+                    continue
+
+            # Medición del tiempo de ejecución con timeit
+            tiempoTotal = timeit.timeit(lambda: metodo(arregloColumna[:]), number=10) / 10
+
+            print(f"Tiempo de ejecución para {metodo.__name__}: {tiempoTotal:.6f} segundos")
+
+            resultados.append((columnaNombre, metodo.__name__, len(arregloColumna), tiempoTotal))
+
+        except MemoryError:
+            print(f"MemoryError al ejecutar {metodo.__name__} en columna {columnaNombre}.")
+        except Exception as e:
+            print(f"Error con {metodo.__name__}: {e}")
 
     return resultados
+
+
+# Definir los nombres de las carpetas donde se guardarán los resultados y gráficos
+carpeta_resultados = "resultados"
+carpeta_graficas = "graficas"
+
+# Crear las carpetas si no existen para almacenar los archivos generados
+os.makedirs(carpeta_resultados, exist_ok=True)
+os.makedirs(carpeta_graficas, exist_ok=True)
 
 # Abrir el archivo .bib y procesar los datos
 with open(ruta, 'r', encoding='utf-8') as archivo:
@@ -119,58 +146,42 @@ with open(ruta, 'r', encoding='utf-8') as archivo:
         columnas.update(entradas.keys())
 
     columnas = list(columnas)
-    print("Columnas disponibles:")
-    for i, columna in enumerate(columnas):
-        print(f"{i + 1}. {columna}")
+    print(f"\nColumnas disponibles: {', '.join(columnas)}\n")
 
-    # Solicitar al usuario que seleccione una columna para analizar
-    columnaSeleccionada = int(input("Seleccione el número de la columna a analizar: ")) - 1
+    resultadosTotales = []
 
-# Validar la selección del usuario
-if 0 <= columnaSeleccionada < len(columnas):
-    # Obtener el nombre de la columna seleccionada por el usuario
-    columnaNombre = columnas[columnaSeleccionada]
-    print(f"Columna seleccionada: {columnaNombre}\n")
+    for columna in columnas:
+        print(f"\n Analizando columna: {columna}")
+        resultados = analizarColumna(columna, entradasBIB)
+        resultadosTotales.extend(resultados)
 
-    # Analizar la columna seleccionada utilizando diferentes métodos de ordenamiento
-    resultados = analizarColumna(columnaNombre, entradasBIB)
+        # Generar nombres de archivos dinámicos basados en la columna analizada
+        nombre_archivo_csv = os.path.join(carpeta_resultados, f"Result Time for {columna}.csv")
 
-    # Definir los nombres de las carpetas donde se guardarán los resultados y gráficos
-    carpeta_resultados = "resultados"
-    carpeta_graficas = "graficas"
+        # Guardar los resultados del análisis en un archivo CSV con la estructura adecuada
+        with open(nombre_archivo_csv, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Columna", "Método", "Tamaño", "Tiempo (s)"])
+            writer.writerows(resultados)
 
-    # Crear las carpetas si no existen para almacenar los archivos generados
-    os.makedirs(carpeta_resultados, exist_ok=True)
-    os.makedirs(carpeta_graficas, exist_ok=True)
+        print(f"\n📂 Resultados guardados en '{nombre_archivo_csv}'.")
 
-    # Generar nombres de archivos dinámicos basados en la columna analizada
-    nombre_archivo_csv = os.path.join(carpeta_resultados, f"resultados_tiempos_{columnaNombre}.csv")
-    nombre_archivo_png = os.path.join(carpeta_graficas, f"grafico_tiempos_{columnaNombre}.png")
+        # Extraer los nombres de los métodos de ordenamiento y los tiempos de ejecución
+        metodos = [r[1] for r in resultados]
+        tiempos = [r[3] for r in resultados]
 
-    # Guardar los resultados del análisis en un archivo CSV con la estructura adecuada
-    with open(nombre_archivo_csv, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(["Columna", "Método", "Tamaño", "Tiempo (s)"])
-        writer.writerows(resultados)
+        # Generar un gráfico de barras para visualizar los tiempos de ejecución
+        plt.figure(figsize=(10, 6))
+        plt.barh(metodos, tiempos, color='skyblue')
+        plt.xlabel("Tiempo (s)")
+        plt.ylabel("Método")
+        plt.title(f"Tiempos de ejecución de algoritmos ({columna})")
+        plt.grid(axis="x", linestyle="--", alpha=0.7)
 
-    print(f"\n📂 Resultados guardados en '{nombre_archivo_csv}'.")
+        nombre_archivo_png = os.path.join(carpeta_graficas, f"Graphic Time for {columna}.png")
+        plt.savefig(nombre_archivo_png)  # Guarda el gráfico en un archivo con el nombre dinámico
+        plt.close()  # Cierra la figura para liberar memoria
 
-    # Extraer los nombres de los métodos de ordenamiento y los tiempos de ejecución
-    metodos = [r[1] for r in resultados]
-    tiempos = [r[3] for r in resultados]
+        print(f"📊 Gráfico guardado como '{nombre_archivo_png}'. Ábrelo manualmente.")
 
-    # Generar un gráfico de barras para visualizar los tiempos de ejecución
-    plt.figure(figsize=(10, 6))
-    plt.barh(metodos, tiempos, color='skyblue')
-    plt.xlabel("Tiempo (s)")
-    plt.ylabel("Método")
-    plt.title(f"Tiempos de ejecución de algoritmos ({columnaNombre})")
-    plt.grid(axis="x", linestyle="--", alpha=0.7)
-    plt.savefig(nombre_archivo_png)  # Guarda el gráfico en un archivo con el nombre dinámico
-
-    print(f"📊 Gráfico guardado como '{nombre_archivo_png}'. Ábrelo manualmente.")
-
-
-else:
-    # Mensaje de error en caso de que la selección del usuario sea inválida
-    print("Selección inválida.")
+    print("\n Análisis de tiempos de ejecución completado.")
