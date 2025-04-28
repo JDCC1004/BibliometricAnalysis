@@ -15,7 +15,7 @@ def extraer_sage(playwright, navegador, pagina):
     try:
         # Acceder al enlace de sage
         pagina.locator("div[data-content-listing-item='fac-ingenier-a']").click()
-        link = pagina.locator("//a[contains(@href, 'journals.sagepub.com')]//span[contains(text(), 'SAGE Revistas Consorcio Colombia - (DESCUBRIDOR) ')]")
+        link = pagina.locator("//a[contains(@href, 'journals.sagepub.com')]//span[contains(text(), 'SAGE Revistas - (DESCUBRIDOR) ')]")
         pagina.wait_for_load_state("domcontentloaded")
         link.click()
 
@@ -29,7 +29,7 @@ def extraer_sage(playwright, navegador, pagina):
         safe_click(pagina, "button.btn.quick-search__button")
         pagina.wait_for_load_state("domcontentloaded")
         pagina.goto("https://journals-sagepub-com.crai.referencistas.com/action/doSearch?AllField=%22computational+thinking%22&startPage=0&pageSize=100")
-        safe_click(pagina, "#onetrust-accept-btn-handler")
+        #safe_click(pagina, "#onetrust-accept-btn-handler")
         time.sleep(1)
         pagina.wait_for_load_state("domcontentloaded")
 
@@ -57,7 +57,7 @@ def extraer_sage(playwright, navegador, pagina):
                 with pagina.expect_download() as download_info:
                     pagina.locator("//a[contains(@download, 'sage.bib')]").click()
                 download = download_info.value
-                download_path = os.path.join(os.getcwd(), "Datos", f"sage_{i}.bib")
+                download_path = os.path.join(os.getcwd(), "Data/DownloadedCitations", f"sage_{i}.bib")
                 download.save_as(download_path)
                 print(f"Archivo descargado en: {download_path}")
 

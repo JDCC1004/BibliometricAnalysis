@@ -44,7 +44,7 @@ def extraer_ieee (playwright, navegador, pagina):
 
         # Seleccion de n resultados por pagina
         pagina.locator("#dropdownPerPageLabel").click()
-        pagina.locator('button:has-text("100")').click()
+        pagina.locator('button:has-text("50")').click()
         pagina.wait_for_load_state("domcontentloaded")
 
         # Descarga de citas en formato bibtex
@@ -53,7 +53,7 @@ def extraer_ieee (playwright, navegador, pagina):
             try:
                 i+=1
                 # Seleccionar todas las citas y presionar el botón de exportar
-                pagina.get_by_role("checkbox", name="Select All on Page").check()
+                pagina.get_by_role("checkbox", name="Select All").check()
                 pagina.get_by_role("button", name="Export").click()
 
                 # Seleccionar la opcion de exportar como cita y el formato bibtex
@@ -61,14 +61,36 @@ def extraer_ieee (playwright, navegador, pagina):
                 pagina.wait_for_load_state("domcontentloaded")
                 pagina.locator('//label[@for="download-bibtex"]//input').check()
 
-                # Descargar archivo
-                with pagina.expect_download() as download_info:
-                    pagina.wait_for_selector("button.stats-SearchResults_Citation_Download", timeout=10000).click()
-                download = download_info.value
-                download_path = os.path.join(os.getcwd(), "Datos", f"IEEE_{i}.bib")
-                download.save_as(download_path)
-                print(f"Archivo descargado en: {download_path}")
-                time.sleep(1)
+                # Seleccionar la opcion de cita con abstract
+                pagina.locator("a.nav-link:has-text('Citations')").click()
+                pagina.wait_for_load_state("domcontentloaded")
+                pagina.locator('//label[@for="citation-abstract"]//input').check()
+
+                # Descargar archivo con reintentos
+                max_reintentos = 3
+                reintento = 0
+                descarga_exitosa = False
+
+                while reintento < max_reintentos and not descarga_exitosa:
+                    try:
+                        with pagina.expect_download(timeout=5000) as download_info:
+                            boton_descarga = pagina.locator("button.stats-SearchResults_Citation_Download")
+                            boton_descarga.wait_for()
+                            boton_descarga.click()
+
+                        download = download_info.value
+                        download_path = os.path.join(os.getcwd(), "Data/DownloadedCitations", f"IEEE_{i}.bib")
+                        download.save_as(download_path)
+                        print(f"Archivo descargado en: {download_path}")
+                        descarga_exitosa = True
+                    except Exception as e:
+                        reintento += 1
+                        print(f"Intento {reintento} fallido al descargar: {e}")
+                        time.sleep(2)  # pequeña pausa antes de reintentar
+
+                if not descarga_exitosa:
+                    print("No se pudo descargar el archivo después de varios intentos.")
+                    raise Exception("Fallo al descargar archivo")
 
                 pagina.get_by_role("button", name="Cancel").click()
                 pagina.wait_for_load_state("domcontentloaded")

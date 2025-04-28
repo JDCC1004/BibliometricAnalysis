@@ -3,8 +3,10 @@ import shutil
 from playwright.sync_api import sync_playwright
 import time
 import Automation.extraccion_Sage as RS
+from dotenv import load_dotenv
 import Automation.extraccion_IEEE as RSIEEE
 import Automation.extraccion_sd as RSSD
+load_dotenv()
 
 
 def initialize_browser():
@@ -34,24 +36,29 @@ def eliminar_archivos(download_directory):
         os.makedirs(download_directory)
 
 def iniciar_sesion(pagina):
+
+    correo = os.getenv("CORREO")
+    contrasena = os.getenv("CONTRASENA")
+
     # Iniciar sesión con correo institucional
     pagina.locator("a#btn-google").click()
     pagina.wait_for_load_state("domcontentloaded")
-    pagina.fill("#identifierId", "@uqvirtual.edu.co")  # Modificar
+    pagina.fill("#identifierId", correo)  # Modificar
     pagina.click("button:has-text('Siguiente')")
     pagina.wait_for_load_state("domcontentloaded")
-    pagina.fill("input[name='Passwd']", "UnaContraseñaSegura") # Modificar
+    pagina.fill("input[name='Passwd']", contrasena) # Modificar
     pagina.click("button:has-text('Siguiente')")
     time.sleep(2)
     pagina.wait_for_load_state("domcontentloaded")
 
 
 def descargar_citas():
-    # Inicialización del navegador
-    playwright, navegador, pagina = initialize_browser()
 
     # Eliminar archivos de la carpeta Datos
-    eliminar_archivos(os.path.join(os.getcwd(), "Datos"))
+    eliminar_archivos(os.path.join(os.getcwd(), "Data/DownloadedCitations"))
+
+    # Inicialización del navegador
+    playwright, navegador, pagina = initialize_browser()
 
     #Extraccion de citas de las bases de datos
     RS.extraer_sage(playwright, navegador, pagina)

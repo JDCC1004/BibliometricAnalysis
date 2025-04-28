@@ -24,7 +24,7 @@ def extraer_sd(playwright, navegador, pagina):
         # Acceder al enlace de IEEE
         pagina.locator("div[data-content-listing-item='fac-ingenier-a']").click()
         link = pagina.locator(
-            "//a[contains(@href, 'https://www.sciencedirect.com')]//span[contains(text(), 'SCIENCEDIRECT - Consorcio Colombia - (DESCUBRIDOR)')]")
+            "//a[contains(@href, 'https://www.sciencedirect.com')]//span[contains(text(), 'SCIENCEDIRECT - (DESCUBRIDOR)')]")
         pagina.wait_for_load_state("domcontentloaded")
         link.last.click()
 
@@ -63,7 +63,7 @@ def extraer_sd(playwright, navegador, pagina):
                 with pagina.expect_download() as download_info:
                     pagina.wait_for_selector('//span[contains(text(), "Export citation to BibTeX")]', timeout=10000).click()
                 download = download_info.value
-                download_path = os.path.join(os.getcwd(), "Datos", f"ScienceDirect_{i}.bib")
+                download_path = os.path.join(os.getcwd(), "Data/DownloadedCitations", f"ScienceDirect_{i}.bib")
                 download.save_as(download_path)
                 print(f"Archivo descargado en: {download_path}")
                 time.sleep(1)
