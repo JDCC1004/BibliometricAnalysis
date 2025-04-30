@@ -108,8 +108,8 @@ def graficarCounter(counter, titulo, cantidad = 15):
     rutaGraphics = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Graphics/Frecuency")
     rutaReports = os.path.join(os.path.dirname(os.path.dirname(__file__)), "Reports")
 
-    nombreArchivoCSV = os.path.join(rutaGraphics, f"Results {titulo}.csv")
-    nombreArchivoPNG = os.path.join(rutaReports, f"Graphic {titulo}.png")
+    nombreArchivoCSV = os.path.join(rutaReports, f"Results {titulo}.csv")
+    nombreArchivoPNG = os.path.join(rutaGraphics, f"Graphic {titulo}.png")
 
     ' CSV Files '
     with open(nombreArchivoCSV, "w", newline="", encoding="utf-8") as f:

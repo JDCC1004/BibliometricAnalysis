@@ -16,19 +16,18 @@ def main():
     #unificar_filtrar_archivos() # ---> Unifica y filtra las citas descargadas de las bases de datos
 
     #Req 2
-    #agrupacion()
-    # Construye la ruta absoluta al ejecutable de Python en el entorno virtual
-    venv_python = os.path.join(os.getcwd(), ".venv", "Scripts", "python.exe")
+    agrupacion()
+
 
     #Req 3
     #subprocess.run(["python", "Methods/Token.py"])
-    subprocess.run([venv_python, "Methods/Token.py"])
-    subprocess.run([venv_python, "Methods/Coincidences.py"])
-    subprocess.run([venv_python, "Methods/Tab.py"])
-    subprocess.run([venv_python, "Methods/WordCloud.py"])
-    subprocess.run([venv_python, "Methods/WordCloud_Cat.py"])
-    subprocess.run([venv_python, "Methods/Co-Word.py"])
-    subprocess.run([venv_python, "Methods/Co-Word_Cat.py"])
+    subprocess.run(["python", "Methods/Token.py"])
+    subprocess.run(["python", "Methods/Coincidences.py"])
+    subprocess.run(["python", "Methods/Tab.py"])
+    subprocess.run(["python", "Methods/WordCloud.py"])
+    subprocess.run(["python", "Methods/WordCloud_Cat.py"])
+    subprocess.run(["python", "Methods/Co-Word.py"])
+    subprocess.run(["python", "Methods/Co-Word_Cat.py"])
 
     #Req 5
     #abstract_handler.extract()
