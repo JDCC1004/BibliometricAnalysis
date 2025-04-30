@@ -60,7 +60,7 @@ def descargar_citas():
     # Inicialización del navegador
     playwright, navegador, pagina = initialize_browser()
 
-    #Extraccion de citas de las bases de datos
+    # Extraccion de citas de las bases de datos
     RS.extraer_sage(playwright, navegador, pagina)
     RSIEEE.extraer_ieee(playwright, navegador, pagina)
     RSSD.extraer_sd(playwright, navegador, pagina)

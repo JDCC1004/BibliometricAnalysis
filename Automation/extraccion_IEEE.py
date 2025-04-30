@@ -42,6 +42,10 @@ def extraer_ieee (playwright, navegador, pagina):
         time.sleep(5)
         pagina.wait_for_load_state("domcontentloaded")
 
+        pagina.fill('[aria-label="Enter start year of range"]', '2020')
+        pagina.locator("//button[@id='Year-apply-btn']").click()
+        pagina.wait_for_load_state("domcontentloaded")
+
         # Seleccion de n resultados por pagina
         pagina.locator("#dropdownPerPageLabel").click()
         pagina.locator('button:has-text("50")').click()
@@ -67,7 +71,7 @@ def extraer_ieee (playwright, navegador, pagina):
                 pagina.locator('//label[@for="citation-abstract"]//input').check()
 
                 # Descargar archivo con reintentos
-                max_reintentos = 3
+                max_reintentos = 5
                 reintento = 0
                 descarga_exitosa = False
 

@@ -33,11 +33,14 @@ def extraer_sd(playwright, navegador, pagina):
             automatizacion.iniciar_sesion(pagina)
 
         # Manejo de la búsqueda
-        pagina.wait_for_selector("//input[@id='qs']", timeout=60000)
+        safe_click(pagina, '//span[contains(text(), "Advanced search")]')
+        pagina.wait_for_load_state("domcontentloaded")
+        pagina.wait_for_selector("//textarea[@id='qs']", timeout=60000)
         time.sleep(1)
-        pagina.locator("//input[@id='qs']").fill('"computational thinking"')
+        pagina.locator("//textarea[@id='qs']").fill('"computational thinking"')
+        pagina.locator("//input[@id='date']").fill('2020-2025')
         time.sleep(1)
-        pagina.locator('//div[@class="form-button-link-container"]//button').click()
+        pagina.locator('//button[@type="submit"]//span//span').click()
         time.sleep(5)
         pagina.wait_for_load_state("domcontentloaded")
 
