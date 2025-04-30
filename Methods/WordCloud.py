@@ -1,18 +1,28 @@
-import os
 import re
 from PIL import Image
 import numpy as np
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import os
 
-# Crear carpeta de salida
-os.makedirs("../Graphics/WordCloud", exist_ok=True)
+# Obtener la ruta absoluta del directorio donde se encuentra el script actual
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Ruta a la carpeta de salida para nubes de palabras
+carpeta_salida = os.path.join(BASE_DIR, "..", "Graphics", "WordCloud")
+os.makedirs(carpeta_salida, exist_ok=True)
 
 # Ruta donde están las tablas
-carpeta_tablas = "../Tables"
+carpeta_tablas = os.path.join(BASE_DIR, "..", "Tables")
 
 # Ruta a la imagen de máscara
-mask_image_path = "../Data/Mask/nube.png"
+mask_image_path = os.path.join(BASE_DIR, "..", "Data", "Mask", "nube.png")
+
+
+# Verificar si la imagen de la máscara existe
+if not os.path.exists(mask_image_path):
+    print(f"❌ La imagen de máscara no se encuentra en: {mask_image_path}")
+    exit()
 
 # Cargar imagen de máscara
 mask = np.array(Image.open(mask_image_path))
@@ -24,8 +34,12 @@ datos_totales = {}
 for archivo in os.listdir(carpeta_tablas):
     if archivo.endswith(".txt"):
         ruta = os.path.join(carpeta_tablas, archivo)
-        with open(ruta, "r", encoding="utf-8") as f:
-            texto = f.read()
+        try:
+            with open(ruta, "r", encoding="utf-8") as f:
+                texto = f.read()
+        except Exception as e:
+            print(f"❌ Error al leer el archivo {archivo}: {e}")
+            continue
 
         # Extraer tuplas (palabra, frecuencia) ignorando encabezados y bordes
         matches = re.findall(r"│ ([^│]+?)\s+│\s+(\d+)\s+│", texto)
@@ -43,11 +57,9 @@ for archivo in os.listdir(carpeta_tablas):
 # Por ejemplo, seleccionamos las 50 más frecuentes
 palabras_destacadas = dict(sorted(datos_totales.items(), key=lambda item: item[1], reverse=True)[:50])
 
-
 # Función para que las palabras sean blancas
 def white_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
     return "white"
-
 
 # Crear la nube de palabras con las frecuencias de las palabras destacadas
 wc = WordCloud(

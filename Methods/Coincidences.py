@@ -1,12 +1,20 @@
-import json
 from collections import Counter
+import os
+import json
 
-# Cargar palabras clave desde un archivo JSON externo
-with open("../Data/KeyWords/keyWords.json", "r", encoding="utf-8") as f:
+# Obtener la ruta absoluta del directorio actual del script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Construir rutas absolutas seguras
+ruta_keywords = os.path.join(BASE_DIR, "..", "Data", "KeyWords", "keyWords.json")
+ruta_tokens = os.path.join(BASE_DIR, "..", "Data", "tokens.txt")
+
+# Cargar palabras clave desde el archivo JSON externo
+with open(ruta_keywords, "r", encoding="utf-8") as f:
     palabras_clave = json.load(f)
 
 # Leer los tokens guardados desde el archivo de texto
-with open("../Data/tokens.txt", "r", encoding="utf-8") as f:
+with open(ruta_tokens, "r", encoding="utf-8") as f:
     todos_los_tokens = f.read().splitlines()
 
 # Contar ocurrencias de cada token

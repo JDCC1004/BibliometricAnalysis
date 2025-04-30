@@ -1,9 +1,13 @@
 import re
+import os
 import string
 
-# Rutas de archivos
-archivo_bib = "../Data/BasesUnificadas.bib"
-archivo_frases = "../Data/KeyWords/compoundWords.txt"
+# Ruta base del archivo actual (por ejemplo, Token.py)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Construir rutas absolutas desde ahí
+archivo_bib = os.path.join(BASE_DIR, "..", "Data", "BasesUnificadas.bib")
+archivo_frases = os.path.join(BASE_DIR, "..", "Data", "KeyWords", "compoundWords.txt")
 
 # Leer el contenido del archivo .bib
 with open(archivo_bib, "r", encoding="utf-8") as archivo:
@@ -39,9 +43,10 @@ for abstract in abstracts:
     todos_los_tokens.extend(tokens)
 
 # Guardar tokens en un archivo
-with open("../Data/tokens.txt", "w", encoding="utf-8") as f:
+tokens_file_path = os.path.join(BASE_DIR, "..", "Data", "tokens.txt")
+with open(tokens_file_path, "w", encoding="utf-8") as f:
     f.write("\n".join(todos_los_tokens))
 
 # Verificación de la frase 'mobile_application'
-with open("../Data/tokens.txt", "r", encoding="utf-8") as f:
+with open(tokens_file_path, "r", encoding="utf-8") as f:
     tokens = f.read().splitlines()

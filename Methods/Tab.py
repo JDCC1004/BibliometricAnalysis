@@ -2,8 +2,12 @@ from Coincidences import coincidencias
 from tabulate import tabulate
 import os
 
-# Crear carpeta 'tablas' si no existe
-os.makedirs("../Tables", exist_ok=True)
+# Ruta base del archivo actual (es decir, Tab.py)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Ruta absoluta a la carpeta 'Tables'
+tables_dir = os.path.join(BASE_DIR, "..", "Tables")
+os.makedirs(tables_dir, exist_ok=True)
 
 # Ordenamiento con timsort
 def criterio(item):
@@ -27,9 +31,9 @@ for categoria, items in categorias.items():
     print(tabla)
 
     # Guardar en archivo
-    output_path = f"../Tables/{categoria}.txt"
+    output_path = os.path.join(tables_dir, f"{categoria}.txt")
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(f"Categoría: {categoria}\n")
         f.write(tabla)
 
-print("✅ Tablas por categoría exportadas en formato 'fancy_grid' en la carpeta 'tablas/'")
+print("✅ Tablas por categoría exportadas en formato 'fancy_grid' en la carpeta 'Tables/'")

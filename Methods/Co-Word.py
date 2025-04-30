@@ -3,20 +3,23 @@ import re
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import numpy as np
 from collections import defaultdict
-import networkx as nx
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
-import matplotlib.colors as mcolors
 import community  # from python-louvain
 
+# Obtener la ruta absoluta del directorio donde se encuentra el script actual
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Carpeta donde están las tablas
-carpeta_tablas = "../Tables"
+carpeta_tablas = os.path.join(BASE_DIR, "..", "Tables")
 
 # Crear matriz de co-ocurrencia
 cooccurrence_matrix = defaultdict(lambda: defaultdict(int))
+
+# Verificar si la carpeta de tablas existe
+if not os.path.exists(carpeta_tablas):
+    print(f"Error: La carpeta de tablas no existe en la ruta {carpeta_tablas}")
+else:
+    print(f"Carpeta de tablas encontrada: {carpeta_tablas}")
 
 # Recorrer archivos y construir co-ocurrencias
 for archivo in os.listdir(carpeta_tablas):
@@ -73,6 +76,10 @@ colors = [cmap(i % 10) for i in partition.values()]
 degrees = dict(G.degree())
 node_sizes = [degrees[node]*80 for node in G.nodes()]
 
+# Crear carpeta para guardar el gráfico si no existe
+carpeta_salida = os.path.join(BASE_DIR, "..", "Graphics", "Co-Word")
+os.makedirs(carpeta_salida, exist_ok=True)
+
 # Crear figura
 fig, ax = plt.subplots(figsize=(14, 12))
 
@@ -96,6 +103,7 @@ ax.axis("off")
 plt.tight_layout()
 
 # Guardar y mostrar
-plt.savefig("../Graphics/Co-Word/co_word_network.png", format="png", bbox_inches="tight", dpi=300)
+nombre_salida = os.path.join(carpeta_salida, "co_word_network.png")
+plt.savefig(nombre_salida, format="png", bbox_inches="tight", dpi=300)
 plt.close()
-print("✅ Grafico de Co-Word generado en la carpeta 'Co-Word/'")
+print(f"✅ Gráfico de Co-Word generado en la carpeta 'Co-Word/'")
