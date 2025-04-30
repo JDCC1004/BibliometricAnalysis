@@ -3,7 +3,7 @@ import string
 
 # Rutas de archivos
 archivo_bib = "../Data/BasesUnificadas.bib"
-archivo_frases = "compuestas.txt"
+archivo_frases = "../Data/KeyWords/compoundWords.txt"
 
 # Leer el contenido del archivo .bib
 with open(archivo_bib, "r", encoding="utf-8") as archivo:
@@ -24,24 +24,24 @@ for abstract in abstracts:
     # Reemplazar frases compuestas
     for frase in frases:
         palabras = frase.split()
-        patron = r'\b' + r'[\s\.,;:"\'()\[\]{}!?-]*'.join(map(re.escape, palabras)) + r'\b'
+        patron = r'\b' + r'[\s\.,;:"\'()\[\]{}!?]*'.join(map(re.escape, palabras)) + r'\b'
 
         if re.search(patron, abstract, flags=re.IGNORECASE):
             print(f"[✔] Reemplazando '{frase}' → '{frase.replace(' ', '_')}' en abstract.")
 
         abstract = re.sub(patron, frase.replace(" ", "_"), abstract, flags=re.IGNORECASE)
 
-    # Eliminar puntuación (excepto guiones bajos)
-    abstract_limpio = abstract.translate(str.maketrans('', '', string.punctuation.replace("_", "")))
+    # Eliminar puntuación (excepto guiones bajos y medios)
+    abstract_limpio = abstract.translate(str.maketrans('', '', string.punctuation.replace("_", "").replace("-", "")))
 
     # Tokenizar y agregar al conjunto global
     tokens = abstract_limpio.split()
     todos_los_tokens.extend(tokens)
 
 # Guardar tokens en un archivo
-with open("tokens.txt", "w", encoding="utf-8") as f:
+with open("../Data/tokens.txt", "w", encoding="utf-8") as f:
     f.write("\n".join(todos_los_tokens))
 
 # Verificación de la frase 'mobile_application'
-with open("tokens.txt", "r", encoding="utf-8") as f:
+with open("../Data/tokens.txt", "r", encoding="utf-8") as f:
     tokens = f.read().splitlines()
