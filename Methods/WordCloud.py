@@ -1,5 +1,7 @@
 import os
 import re
+from PIL import Image
+import numpy as np
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
@@ -8,6 +10,15 @@ os.makedirs("../Graphics/WordCloud", exist_ok=True)
 
 # Ruta donde están las tablas
 carpeta_tablas = "../Tables"
+
+# Ruta a la imagen de máscara
+mask_image_path = "../Data/Mask/nube.png"
+
+# Cargar imagen de máscara
+mask = np.array(Image.open(mask_image_path))
+
+# Inicializar un diccionario para las frecuencias totales de todas las palabras
+datos_totales = {}
 
 # Recorrer archivos de texto
 for archivo in os.listdir(carpeta_tablas):
@@ -18,19 +29,53 @@ for archivo in os.listdir(carpeta_tablas):
 
         # Extraer tuplas (palabra, frecuencia) ignorando encabezados y bordes
         matches = re.findall(r"│ ([^│]+?)\s+│\s+(\d+)\s+│", texto)
-        datos = {palabra.strip(): int(frecuencia) for palabra, frecuencia in matches}
 
-        if not datos:
-            continue  # Saltar si está vacío
+        # Sumar las frecuencias de las palabras para el conteo general
+        for palabra, frecuencia in matches:
+            palabra = palabra.strip()
+            frecuencia = int(frecuencia)
+            if palabra in datos_totales:
+                datos_totales[palabra] += frecuencia
+            else:
+                datos_totales[palabra] = frecuencia
 
-        # Crear WordCloud
-        wc = WordCloud(width=1000, height=500, background_color="white", colormap="viridis")
-        wc.generate_from_frequencies(datos)
-
-        # Guardar imagen
-        nombre_categoria = archivo.replace(".txt", "")
-        ruta_salida = f"../Graphics/WordClod/{nombre_categoria}.png"
-        wc.to_file(ruta_salida)
+# Ordenar las palabras por frecuencia (de mayor a menor) y tomar solo las más frecuentes
+# Por ejemplo, seleccionamos las 50 más frecuentes
+palabras_destacadas = dict(sorted(datos_totales.items(), key=lambda item: item[1], reverse=True)[:50])
 
 
-print("✅ Nubes de palabras generadas en la carpeta 'nubes/'")
+# Función para que las palabras sean blancas
+def white_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+    return "white"
+
+
+# Crear la nube de palabras con las frecuencias de las palabras destacadas
+wc = WordCloud(
+    background_color='deepskyblue',  # Fondo azul
+    mask=mask,  # Aplicar forma de nube
+    contour_width=5,
+    contour_color='white',
+    max_words=50,  # Limitar a las 50 palabras más frecuentes
+    color_func=white_color_func  # Aplicar el color blanco a las palabras
+)
+wc.generate_from_frequencies(palabras_destacadas)
+
+# Guardar la imagen generada
+ruta_salida = "../Graphics/WordCloud/general_wordcloud_destacadas.png"
+
+# Convertir la imagen de la nube de palabras a un array de numpy
+imagen_wc = wc.to_array()
+
+# Usar matplotlib para mostrar la nube de palabras
+plt.figure(figsize=(10, 8))
+plt.imshow(imagen_wc, interpolation='bilinear')
+plt.axis("off")
+
+# Título de la nube de palabras
+plt.text(0.05, 0.05, "Palabras Clave", color='blue', fontsize=20, ha='left', va='bottom', transform=plt.gca().transAxes)
+
+# Guardar la imagen con el título
+plt.savefig(ruta_salida, format="png", bbox_inches="tight", pad_inches=0.0)
+plt.close()
+
+print("✅ Nube de palabras destacadas generada en la carpeta 'WordCloud/'")
