@@ -2,33 +2,33 @@ Categoría: estrategia
 ╒════════════════════════════════════╤══════════════╕
 │ Palabra Clave                      │   Frecuencia │
 ╞════════════════════════════════════╪══════════════╡
-│ game-based_learning                │           95 │
+│ game-based_learning                │           68 │
 ├────────────────────────────────────┼──────────────┤
-│ gamification                       │           56 │
+│ gamification                       │           50 │
 ├────────────────────────────────────┼──────────────┤
-│ collaborative_learning             │           38 │
+│ project-based_learning             │           30 │
 ├────────────────────────────────────┼──────────────┤
-│ project-based_learning             │           33 │
+│ collaborative_learning             │           25 │
 ├────────────────────────────────────┼──────────────┤
-│ problem-based_learning             │           21 │
+│ problem-based_learning             │           12 │
 ├────────────────────────────────────┼──────────────┤
-│ flipped_classroom                  │           14 │
+│ flipped_classroom                  │           10 │
 ├────────────────────────────────────┼──────────────┤
-│ inquiry-based_learning             │           10 │
+│ inquiry-based_learning             │            7 │
 ├────────────────────────────────────┼──────────────┤
-│ personalized_learning              │            8 │
+│ personalized_learning              │            6 │
 ├────────────────────────────────────┼──────────────┤
-│ technology-enhanced_learning       │            7 │
+│ cooperative_learning               │            4 │
 ├────────────────────────────────────┼──────────────┤
-│ cooperative_learning               │            6 │
+│ technology-enhanced_learning       │            3 │
 ├────────────────────────────────────┼──────────────┤
 │ construct-by-self_mind_mapping     │            1 │
 ├────────────────────────────────────┼──────────────┤
 │ construct-on-scaffold_mind_mapping │            1 │
 ├────────────────────────────────────┼──────────────┤
-│ design-based_learning              │            1 │
-├────────────────────────────────────┼──────────────┤
 │ reverse_engineering_pedagogy       │            1 │
+├────────────────────────────────────┼──────────────┤
+│ design-based_learning              │            0 │
 ├────────────────────────────────────┼──────────────┤
 │ evidence-centred_design_approach   │            0 │
 ├────────────────────────────────────┼──────────────┤

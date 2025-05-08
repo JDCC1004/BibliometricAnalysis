@@ -64,3 +64,8 @@ def descargar_citas():
     RS.extraer_sage(playwright, navegador, pagina)
     RSIEEE.extraer_ieee(playwright, navegador, pagina)
     RSSD.extraer_sd(playwright, navegador, pagina)
+
+
+if __name__ == "__main__":
+    # Descargar citas
+    descargar_citas()

@@ -2,15 +2,15 @@ Categoría: diseño de investigación
 ╒═══════════════════════╤══════════════╕
 │ Palabra Clave         │   Frecuencia │
 ╞═══════════════════════╪══════════════╡
-│ experimental          │          181 │
+│ experimental          │          150 │
 ├───────────────────────┼──────────────┤
-│ post-test             │           36 │
+│ post-test             │           33 │
 ├───────────────────────┼──────────────┤
-│ pre-test              │           18 │
+│ pre-test              │           16 │
 ├───────────────────────┼──────────────┤
-│ mixed_methods         │           15 │
+│ mixed_methods         │           12 │
 ├───────────────────────┼──────────────┤
-│ longitudinal_research │            2 │
+│ longitudinal_research │            1 │
 ├───────────────────────┼──────────────┤
 │ quasi-experiments     │            1 │
 ├───────────────────────┼──────────────┤

@@ -2,17 +2,17 @@ Categoría: actitudes
 ╒═════════════════╤══════════════╕
 │ Palabra Clave   │   Frecuencia │
 ╞═════════════════╪══════════════╡
-│ engagement      │          298 │
+│ engagement      │          227 │
 ├─────────────────┼──────────────┤
-│ motivation      │          249 │
+│ motivation      │          205 │
 ├─────────────────┼──────────────┤
-│ self-efficacy   │          134 │
+│ self-efficacy   │          119 │
 ├─────────────────┼──────────────┤
-│ perceptions     │          102 │
+│ perceptions     │           84 │
 ├─────────────────┼──────────────┤
-│ emotional       │           56 │
+│ emotional       │           51 │
 ├─────────────────┼──────────────┤
-│ persistence     │           11 │
+│ persistence     │            7 │
 ├─────────────────┼──────────────┤
 │ self-perceived  │            0 │
 ╘═════════════════╧══════════════╛

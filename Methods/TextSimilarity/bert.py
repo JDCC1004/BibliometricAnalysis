@@ -1,75 +1,62 @@
-import numpy as np
-from sentence_transformers import SentenceTransformer
-import pandas as pd
 import os
+import pandas as pd
+import numpy as np
+import re
 import torch
+from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import cos_sim
 
+# Función para limpiar el texto respecto a la técnica BERT
+def limpiar_texto_ligero(text):
+    text = str(text).lower()
+    text = re.sub(r"[^\w\s]", '', text)  # Solo remover puntuación básica
+    return text.strip()
 
-def mount_csv():
-    root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    csv_path = os.path.join(root_dir, 'Data', 'Abstracts', 'abstracts_limpios.csv')
-
-    # Cargar
-    df = pd.read_csv(csv_path, encoding='utf-8')
-
-    print(f"Número de abstracts cargados: {len(df)}")
+# Función para cargar y limpiar los abstracts
+def load_and_clean():
+    path = os.path.join('Data', 'Abstracts', 'abstracts_extraidos.csv')
+    df = pd.read_csv(path)
+    df['abstract'] = df['abstract'].apply(limpiar_texto_ligero)
     return df
 
-def vectorise(df):
-    # Cargar modelo BERT optimizado para similitud semántica
-    model = SentenceTransformer('all-MiniLM-L6-v2')  # Rápido y efectivo
-
-    # Codificar los abstracts
+# Función para vectorizar los abstracts usando BERT
+def vectorize_bert(df):
+    model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings = model.encode(df['abstract'].tolist(), convert_to_tensor=True)
-
-    print(f"Shape de los embeddings: {embeddings.shape}")
     return embeddings
 
+# Función para calcular la similitud coseno entre los vectores BERT
 def similarity(embeddings):
-    # Calcular similitud coseno entre todos los abstracts
-    cosine_sim_matrix = cos_sim(embeddings, embeddings)
+    return cos_sim(embeddings, embeddings)
 
-    print(f"Shape de la matriz de similitud: {cosine_sim_matrix.shape}")
-    return cosine_sim_matrix
+# Función para exportar la matriz a un archivo .npy
+def export_matrix(matrix, filename):
+    path = os.path.join('Data', 'Matrices', filename)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    np.save(path, matrix.numpy())
+    print(f'Matriz guardada en {path}')
 
-def export_matrix(cosine_matrix):
-    root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    output_path = os.path.join(root_dir, 'Data', 'Matrices', 'bert_cosine_sim_matrix.npy')
-    # Asegurar que el directorio 'Matrices' exista
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    np.save(output_path, cosine_matrix.numpy())
-    print(f"Matriz de similitud BERT guardada en: {output_path}")
-
-
+# Función para exportar los embeddings a un archivo .npy
 def export_embeddings(embeddings):
-    root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    output_path = os.path.join(root_dir, 'Data', 'Matrices', 'bert_vector_matrix.npy')
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    path = os.path.join('Data', 'Matrices', 'bert_vector_matrix.npy')
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    np.save(path, embeddings.cpu().numpy())
+    print(f'Embeddings guardados en {path}')
 
-    np.save(output_path, embeddings.cpu().numpy())  # Convertir a NumPy y exportar
-    print(f"Embeddings BERT guardados en: {output_path}")
-
+# Función principal para ejecutar el proceso de BERT
 def bert():
+    df = load_and_clean()
+    embeddings = vectorize_bert(df)
+    cosine_matrix = similarity(embeddings)
 
-    df = mount_csv() # ---> Cargar el CSV con los abstracts limpios
-    embedding = vectorise(df)  # ---> Vectorizar los abstracts usando BERT
-    cosine_matrix = similarity(embedding)  # ---> Calcular la matriz de similitud coseno
-    export_matrix(cosine_matrix) # ---> Guardar la matriz de similitud
-    export_embeddings(embedding) # ---> Guardar los embeddings
+    export_matrix(cosine_matrix, 'bert_cosine_sim_matrix.npy')
+    export_embeddings(embeddings)
 
-
-
-    # ----------------------- Ejemplo de uso -----------------------
-    similarities = cosine_matrix[0]
-    top_results = torch.topk(similarities, k=6)  # top 6 (incluye el mismo)
-
-    print("Abstractos más similares al abstract 0:")
-    for score, idx in zip(top_results.values[1:], top_results.indices[1:]):  # [1:] para omitir el mismo
+    # Ejemplos de la similitud
+    top_results = torch.topk(cosine_matrix[0], k=6)
+    print("Top 5 similares al abstract 0:")
+    for score, idx in zip(top_results.values[1:], top_results.indices[1:]):
         print(f"Abstract {idx.item()} con similitud {score.item():.4f}")
-
-    return  cosine_matrix
 
 if __name__ == "__main__":
     bert()
-
