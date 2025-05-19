@@ -5,8 +5,9 @@ import os
 
 def mostrar():
     st.title("Datos Analizados")
-    st.write("En esta sección se muestran los datos que fueron utilizados para realizar el análisis.")
-    st.write("Estos datos fueron obtenidos de las bases de datos académicas brindas por el CRAI de la Universidad del Quindío")
+    st.write("En la siguiente sección se muestra el corpus utilizado para la realización de este proyecto. " \
+    "Estos datos fueron obtenidos de las bases de datos académicas brindas por el CRAI de la Universidad del Quindío. " \
+    "Este corpus fue debidamente filtrado con el fin de eliminar las entradas duplicadas que pudieran presentarse en las diferentes bases de datos, de estas, únicamente se obtuvieron dos entradas duplicadas de un estimado de 1300 entradas. " )
 
     rutaArchivo = "Data\BasesFiltradas.bib"
 
@@ -40,11 +41,17 @@ def mostrar():
             journals = sorted(df['journal'].dropna().unique())
             journalSelected = st.multiselect("Journals", journals)
 
+            publishers = sorted(df['publisher'].dropna().unique())
+            publisherSelected = st.multiselect("Publisher", publishers)
+
+            types = sorted(df['ENTRYTYPE'].dropna().unique())
+            typeSelected = st.multiselect("Tipo de entrada", types)
+
             dfFiltrado = df.copy()
 
             if autorSeleccionado:
                 dfFiltrado = dfFiltrado[dfFiltrado['author'].apply(
-                    lambda x: any(a.strip() in x for a in autorSeleccionado))]
+                    lambda x: any(a.strip() in str(x) for a in autorSeleccionado))]
                 
             if yearSelected:
                 dfFiltrado = dfFiltrado[dfFiltrado['year'].isin(yearSelected)]
@@ -54,6 +61,12 @@ def mostrar():
 
             if journalSelected:
                 dfFiltrado = dfFiltrado[dfFiltrado['journal'].isin(journalSelected)]
+
+            if publisherSelected:
+                dfFiltrado = dfFiltrado[dfFiltrado['publisher'].isin(publisherSelected)]
+
+            if typeSelected:
+                dfFiltrado = dfFiltrado[dfFiltrado['ENTRYTYPE'].isin(typeSelected)]
 
             st.subheader("Datos Filtrados")
             st.dataframe(dfFiltrado.reset_index(drop=True), use_container_width=True)

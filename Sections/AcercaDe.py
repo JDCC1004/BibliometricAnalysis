@@ -12,4 +12,4 @@ def mostrar():
     st.subheader("Autores")
     st.write("Julian Cruz")
     st.write("Yhonatan Gomez")
-    st.write("Maaría Paula Quintín")
+    st.write("María Paula Quintín")
