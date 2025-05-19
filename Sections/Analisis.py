@@ -9,7 +9,7 @@ def mostrar():
     "Estos datos fueron obtenidos de las bases de datos académicas brindas por el CRAI de la Universidad del Quindío. " \
     "Este corpus fue debidamente filtrado con el fin de eliminar las entradas duplicadas que pudieran presentarse en las diferentes bases de datos, de estas, únicamente se obtuvieron dos entradas duplicadas de un estimado de 1300 entradas. " )
 
-    rutaArchivo = "Data\BasesFiltradas.bib"
+    rutaArchivo = os.path.join("Data", "BasesFiltradas.bib")
 
     try:
         with open(rutaArchivo, "r", encoding="utf-8") as file:
