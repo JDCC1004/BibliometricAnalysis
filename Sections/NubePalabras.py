@@ -2,11 +2,15 @@ import streamlit as st
 import os
 
 def mostrar():
-    carpetaGraficas = os.path.join("Graphics", "Frecuency")
+    st.title("Nubes de Palabras")
+    
+    # Carpeta donde se encuentran las imágenes
+    carpetaGraficas = os.path.join("Graphics", "WordCloud", "Cat")
+    
+    # Obtener la lista de imágenes en la carpeta
     imagenes = [img for img in os.listdir(carpetaGraficas) if img.endswith(".png")]
-
-    st.title("Visualización de Imágenes")
-
+    
+    # Mostrar las imágenes en Streamlit
     for imagen in imagenes:
         rutaImagen = os.path.join(carpetaGraficas, imagen)
         st.image(rutaImagen, caption=imagen, use_container_width=True)
